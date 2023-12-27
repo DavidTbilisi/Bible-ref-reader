@@ -1,0 +1,42 @@
+@font-face {
+  font-family: bgp_arial;
+  src: url('bgp_arial_2009.ttf');
+}
+
+// .main-grid {
+//   display: grid;
+//   grid-template-columns: 1fr;
+//   grid-gap: 20px;
+// }
+
+.container {
+  display: flex;
+  min-height: 100vh;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+  input {
+    padding: 10px;
+    margin-top: 20px;
+  }
+
+  .title {
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+
+  .verse {
+    max-width: 600px;
+    line-height: 2rem;
+    font-family: "bgp_arial", sans-serif;
+    font-size: 20px;
+    border-bottom:1px solid #cdcdcd;
+    padding: 13px;
+    margin-bottom: 0.5rem;
+  }
+}
