@@ -1,4 +1,3 @@
 # Parse Bible
 
-A Pen created on CodePen.io. Original URL: [https://codepen.io/DavidTbilisi/pen/eYXmoOq](https://codepen.io/DavidTbilisi/pen/eYXmoOq).
-
+![image](https://github.com/DavidTbilisi/Bible-ref-reader/assets/14097493/562d1f12-6826-497c-b2ba-9a92bce10f8c)
