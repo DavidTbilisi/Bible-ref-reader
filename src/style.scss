@@ -1,13 +1,7 @@
 @font-face {
   font-family: bgp_arial;
-  src: url('bgp_arial_2009.ttf');
+  src: url('./bpg_arial_2009.ttf');
 }
-
-// .main-grid {
-//   display: grid;
-//   grid-template-columns: 1fr;
-//   grid-gap: 20px;
-// }
 
 .container {
   display: flex;

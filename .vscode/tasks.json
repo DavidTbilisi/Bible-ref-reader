@@ -1,0 +1,48 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build html",
+            "type": "shell",
+            "command": "pug -P -o ./ ./src/*.pug"
+        },
+        {
+            "label": "build js",
+            "type": "shell",
+            "command": "cp ./src/javascript/* ./"
+        },
+        {
+            "label": "build",
+            "dependsOn": [
+                "build html",
+                "build js"
+            ]
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "rm -rf *.html *.js"
+        },
+        {
+            "label": "rebuild",
+            "dependsOn": [
+                "clean",
+                "build"
+            ]
+        },
+        {
+            "label": "cleanRebuild",
+            "dependsOn": [
+                "clean",
+                "rebuild"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

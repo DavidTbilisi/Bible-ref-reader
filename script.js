@@ -1,504 +1,96 @@
-let books = [
-		{
-			"name": "დაბ",
-			"synonyms": [
-				"Gen"
-			],
-			"numChapters": 50
-		},
-		{
-			"name": "გამ",
-			"synonyms": [
-				"Exod"
-			],
-			"numChapters": 40
-		},
-		{
-			"name": "ლევ",
-			"synonyms": [
-				"Lev"
-			],
-			"numChapters": 27
-		},
-		{
-			"name": "რიცხ",
-			"synonyms": [
-				"Num"
-			],
-			"numChapters": 36
-		},
-		{
-			"name": "რჯლ",
-			"synonyms": [
-				"Deut"
-			],
-			"numChapters": 34
-		},
-		{
-			"name": "იესო",
-			"synonyms": [
-				"Josh"
-			],
-			"numChapters": 24
-		},
-		{
-			"name": "მსაჯ",
-			"synonyms": [
-				"Judg"
-			],
-			"numChapters": 21
-		},
-		{
-			"name": "რუთ",
-			"synonyms": [
-				"Ruth"
-			],
-			"numChapters": 4
-		},
-		{
-			"name": "1მეფ",
-			"synonyms": [
-				"1Sam"
-			],
-			"numChapters": 31
-		},
-		{
-			"name": "2მეფ",
-			"synonyms": [
-				"2Sam"
-			],
-			"numChapters": 24
-		},
-		{
-			"name": "3მეფ",
-			"synonyms": [
-				"1Kgs"
-			],
-			"numChapters": 22
-		},
-		{
-			"name": "4მეფ",
-			"synonyms": [
-				"2Kgs"
-			],
-			"numChapters": 25
-		},
-		{
-			"name": "1ნეშტ",
-			"synonyms": [
-				"1Chr"
-			],
-			"numChapters": 29
-		},
-		{
-			"name": "2ნეშტ",
-			"synonyms": [
-				"2Chr"
-			],
-			"numChapters": 36
-		},
-		{
-			"name": "ეზრ",
-			"synonyms": [
-				"Ezra"
-			],
-			"numChapters": 10
-		},
-		{
-			"name": "ნეემ",
-			"synonyms": [
-				"Neh"
-			],
-			"numChapters": 13
-		},
-		{
-			"name": "ესთ",
-			"synonyms": [
-				"Esth"
-			],
-			"numChapters": 10
-		},
-		{
-			"name": "იობ",
-			"synonyms": [
-				"Job"
-			],
-			"numChapters": 42
-		},
-		{
-			"name": "ფსალმ",
-			"synonyms": [
-				"Ps"
-			],
-			"numChapters": 150
-		},
-		{
-			"name": "იგავ",
-			"synonyms": [
-				"Prov"
-			],
-			"numChapters": 31
-		},
-		{
-			"name": "ეკლ",
-			"synonyms": [
-				"Eccl"
-			],
-			"numChapters": 12
-		},
-		{
-			"name": "ქებ",
-			"synonyms": [
-				"Song"
-			],
-			"numChapters": 8
-		},
-		{
-			"name": "ეს",
-			"synonyms": [
-				"Isa"
-			],
-			"numChapters": 66
-		},
-		{
-			"name": "იერ",
-			"synonyms": [
-				"Jer"
-			],
-			"numChapters": 52
-		},
-		{
-			"name": "გოდ",
-			"synonyms": [
-				"Lam"
-			],
-			"numChapters": 5
-		},
-		{
-			"name": "ეზეკ",
-			"synonyms": [
-				"Ezek"
-			],
-			"numChapters": 48
-		},
-		{
-			"name": "დან",
-			"synonyms": [
-				"Dan"
-			],
-			"numChapters": 12
-		},
-		{
-			"name": "ოს",
-			"synonyms": [
-				"Hos"
-			],
-			"numChapters": 14
-		},
-		{
-			"name": "იოელ",
-			"synonyms": [
-				"Joel"
-			],
-			"numChapters": 4
-		},
-		{
-			"name": "ამოს",
-			"synonyms": [
-				"Amos"
-			],
-			"numChapters": 9
-		},
-		{
-			"name": "აბდ",
-			"synonyms": [
-				"Obad"
-			],
-			"numChapters": 1
-		},
-		{
-			"name": "იონ",
-			"synonyms": [
-				"Jonah"
-			],
-			"numChapters": 4
-		},
-		{
-			"name": "მიქ",
-			"synonyms": [
-				"Mic"
-			],
-			"numChapters": 7
-		},
-		{
-			"name": "ნაუმ",
-			"synonyms": [
-				"Nah"
-			],
-			"numChapters": 3
-		},
-		{
-			"name": "აბაკ",
-			"synonyms": [
-				"Hab"
-			],
-			"numChapters": 3
-		},
-		{
-			"name": "სოფ",
-			"synonyms": [
-				"Zeph"
-			],
-			"numChapters": 3
-		},
-		{
-			"name": "ანგ",
-			"synonyms": [
-				"Hag"
-			],
-			"numChapters": 2
-		},
-		{
-			"name": "ზაქ",
-			"synonyms": [
-				"Zech"
-			],
-			"numChapters": 14
-		},
-		{
-			"name": "მალ",
-			"synonyms": [
-				"Mal"
-			],
-			"numChapters": 3
-		},
-		{
-			"name": "მათ",
-			"synonyms": [
-				"Matt"
-			],
-			"numChapters": 28
-		},
-		{
-			"name": "მარკ",
-			"synonyms": [
-				"Mark"
-			],
-			"numChapters": 16
-		},
-		{
-			"name": "ლუკ",
-			"synonyms": [
-				"Luke"
-			],
-			"numChapters": 24
-		},
-		{
-			"name": "იოან",
-			"synonyms": [
-				"John"
-			],
-			"numChapters": 21
-		},
-		{
-			"name": "საქმე",
-			"synonyms": [
-				"Acts"
-			],
-			"numChapters": 28
-		},
-		{
-			"name": "იაკ",
-			"synonyms": [
-				"Jas"
-			],
-			"numChapters": 5
-		},
-		{
-			"name": "1პეტრ",
-			"synonyms": [
-				"1Pet"
-			],
-			"numChapters": 5
-		},
-		{
-			"name": "2პეტრ",
-			"synonyms": [
-				"2Pet"
-			],
-			"numChapters": 3
-		},
-		{
-			"name": "1იოან",
-			"synonyms": [
-				"1John"
-			],
-			"numChapters": 5
-		},
-		{
-			"name": "2იოან",
-			"synonyms": [
-				"2John"
-			],
-			"numChapters": 1
-		},
-		{
-			"name": "3იოან",
-			"synonyms": [
-				"3John"
-			],
-			"numChapters": 1
-		},
-		{
-			"name": "იუდ",
-			"synonyms": [
-				"Jude"
-			],
-			"numChapters": 1
-		},
-		{
-			"name": "რომ",
-			"synonyms": [
-				"Rom"
-			],
-			"numChapters": 16
-		},
-		{
-			"name": "1კორ",
-			"synonyms": [
-				"1Cor"
-			],
-			"numChapters": 16
-		},
-		{
-			"name": "2კორ",
-			"synonyms": [
-				"2Cor"
-			],
-			"numChapters": 13
-		},
-		{
-			"name": "გალ",
-			"synonyms": [
-				"Gal"
-			],
-			"numChapters": 6
-		},
-		{
-			"name": "ეფეს",
-			"synonyms": [
-				"Eph"
-			],
-			"numChapters": 6
-		},
-		{
-			"name": "ფილიპ",
-			"synonyms": [
-				"Phil"
-			],
-			"numChapters": 4
-		},
-		{
-			"name": "კოლ",
-			"synonyms": [
-				"Col"
-			],
-			"numChapters": 4
-		},
-		{
-			"name": "1თეს",
-			"synonyms": [
-				"1Thess"
-			],
-			"numChapters": 5
-		},
-		{
-			"name": "2თეს",
-			"synonyms": [
-				"2Thess"
-			],
-			"numChapters": 3
-		},
-		{
-			"name": "1ტიმ",
-			"synonyms": [
-				"1Tim"
-			],
-			"numChapters": 6
-		},
-		{
-			"name": "2ტიმ",
-			"synonyms": [
-				"2Tim"
-			],
-			"numChapters": 4
-		},
-		{
-			"name": "ტიტ",
-			"synonyms": [
-				"Titus"
-			],
-			"numChapters": 3
-		},
-		{
-			"name": "ფილ",
-			"synonyms": [
-				"Phlm"
-			],
-			"numChapters": 1
-		},
-		{
-			"name": "ებრ",
-			"synonyms": [
-				"Heb"
-			],
-			"numChapters": 13
-		},
-		{
-			"name": "გამოცხ",
-			"synonyms": [
-				"Rev"
-			],
-			"numChapters": 22
-		}
-	]
-
 // https://davidchincharashvii.pythonanywhere.com/api/ka/geo/1/1/1/8
 function bibleBookToID(bookName) {
-  for (let i = 0; i < books.length; i++) {
-      if (books[i].name === bookName || books[i].synonyms.includes(bookName)) {
-          return i + 1; // Returns the index + 1 as book ID
-      }
-  }
-  return "Invalid Book Name";
+  const books = {
+    Gen: 1,
+    Exo: 2,
+    Lev: 3,
+    Num: 4,
+    Deu: 5,
+    Jos: 6,
+    Jdg: 7,
+    Rut: 8,
+    "1Sa": 9,
+    "2Sa": 10,
+    "1Ki": 11,
+    "2Ki": 12,
+    "1Ch": 13,
+    "2Ch": 14,
+    Ezr: 15,
+    Neh: 16,
+    Est: 17,
+    Job: 18,
+    Psa: 19,
+    Pro: 20,
+    Ecc: 21,
+    Son: 22,
+    Isa: 23,
+    Jer: 24,
+    Lam: 25,
+    Eze: 26,
+    Dan: 27,
+    Hos: 28,
+    Joe: 29,
+    Amo: 30,
+    Oba: 31,
+    Jon: 32,
+    Mic: 33,
+    Nah: 34,
+    Hab: 35,
+    Zep: 36,
+    Hag: 37,
+    Zec: 38,
+    Mal: 39,
+    Mat: 40,
+    Mar: 41,
+    Luk: 42,
+    Joh: 43,
+    Act: 44,
+    Rom: 45,
+    "1Co": 46,
+    "2Co": 47,
+    Gal: 48,
+    Eph: 49,
+    Phi: 50,
+    Col: 51,
+    "1Th": 52,
+    "2Th": 53,
+    "1Ti": 54,
+    "2Ti": 55,
+    Tit: 56,
+    Phm: 57,
+    Heb: 58,
+    Jam: 59,
+    "1Pe": 60,
+    "2Pe": 61,
+    "1Jo": 62,
+    "2Jo": 63,
+    "3Jo": 64,
+    Jud: 65,
+    Rev: 66
+  };
+  return books[bookName] || "Invalid Book Name";
 }
 
-function parseBibleReference(reference = "Gen 1:1-1") {
-  let book_id = 1, chapter_num = 1, start_verse_num = 1, end_verse_num = 1;
-
-  if (reference.includes(" ")) {
-      const parts = reference.split(" ");
-      book_id = bibleBookToID(parts[0]);
-
-      if (parts[1].includes(":")) {
-          const chapterAndVerse = parts[1].split(":");
-          chapter_num = parseInt(chapterAndVerse[0]);
-
-          if (chapterAndVerse[1].includes("-")) {
-              const verses = chapterAndVerse[1].split("-");
-              start_verse_num = parseInt(verses[0]);
-              end_verse_num = parseInt(verses[1]);
-          } else {
-              start_verse_num = end_verse_num = parseInt(chapterAndVerse[1]);
-          }
-      }
+function parseBibleReference(reference) {
+  let verses = [1,1];
+  const parts = reference.split(" ");
+  const bookName = parts[0];
+  const chapterAndVerse = parts[1].split(":");
+  // verses are optional
+  if (chapterAndVerse[1].includes("-")) {
+    verses = chapterAndVerse[1].split("-");
   }
 
-  return { book_id, chapter_num, start_verse_num, end_verse_num };
+  return {
+    book_id: bibleBookToID(bookName),
+    chapter_num: parseInt(chapterAndVerse[0]),
+    start_verse_num: parseInt(verses[0]),
+    end_verse_num: parseInt(verses[1])
+  };
 }
 
 let search_input = document.querySelector("input");
-search_input.addEventListener("keyup", function () {
+search_input.addEventListener("blur", function () {
   let parsedData = parseBibleReference(search_input.value);
   parse(parsedData);
 });
@@ -514,7 +106,7 @@ function parse({ book_id, chapter_num, start_verse_num, end_verse_num }) {
   axios.get(url)
     .then(function (response) {
       console.log(response.data);
-      let title = `${response.data.book} ${response.data.chapter}`;
+      let title = `${response.data.book_name} ${response.data.chapter_num}:${response.data.start_verse_num}-${response.data.end_verse_num}`;
       let verses = response.data.verses;
       show(title, verses);
     })
@@ -544,19 +136,3 @@ function showError() {
   result.innerHTML = html;
 }
 
-function showNotFound() {
-  let result = document.querySelector(".result");
-  let html = `<div class="not-found">Not Found</div>`;
-  result.innerHTML = html;
-}
-
-function appendBookList() {
-  let bookList = document.querySelector(".book-list");
-  let html = "";
-  for (let book in books) {
-    html += `<a class="book" data-id="${books[book]}">${book}</a>`;
-  }
-  bookList.innerHTML = html;
-}
-
-appendBookList();
