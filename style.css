@@ -1,6 +1,6 @@
 @font-face {
   font-family: bgp_arial;
-  src: url("bgp_arial_2009.ttf");
+  src: url("./bpg_arial_2009.ttf");
 }
 .container {
   display: flex;
