@@ -9,10 +9,9 @@ class Parser {
         this.books = books;
     }
 
-
     convertInput () {
         let reference = this.input.value;
-        let ref, bookId=1, bookName="დაბ", chapter=1, verseStart=1, verseEnd=1;
+        let ref, bookId=1, bookName="დაბ", chapter, verseStart, verseEnd;
 
 
         if (reference) {
@@ -24,9 +23,9 @@ class Parser {
         let toReturn = {
             bookId,
             bookName,
-            chapter: chapter?parseInt(chapter):1,
-            verseStart: verseStart?parseInt(verseStart):1,
-            verseEnd: verseEnd?parseInt(verseEnd):undefined
+            chapter: chapter?parseInt(chapter):null,
+            verseStart: verseStart?parseInt(verseStart):null,
+            verseEnd: verseEnd?parseInt(verseEnd):null
         };
 
         return toReturn;
@@ -41,11 +40,22 @@ class Parser {
         return "Invalid Book Name";
     }
 
+    cleanData(data) {
+        let cleanData =  Object.entries(data).filter(([key, value]) => value !== null)
+        cleanData = Object.fromEntries(cleanData); // convert back to object
+        // cleanData = Object.values(cleanData) //  convert to array
+        return cleanData;
+    }
+
     show() {
         let converted =  this.convertInput();
         this.showLoading();
         if (converted) {
-            this.bible.getVerses(converted.bookId, converted.chapter, converted.verseStart, converted.verseEnd).then(data => {
+            // filter values that are not null
+            
+            let convertedClean = this.cleanData(converted);
+
+            this.bible.getVerses(convertedClean).then(data => {
                 this.showVerses(data);
             }).catch(err => {
                 this.showNoResults();
@@ -56,6 +66,13 @@ class Parser {
 
     showVerses(data) {
         let html = `<div class="title">${data.book} ${data.chapter}</div>`;
+
+        if (typeof data.verses === "object" && !Array.isArray(data.verses)) {
+            data.verses = Object.values(data.verses);
+        } else if (typeof data.verses === "string") {
+            data.verses = [data.verses];
+        }
+
         data.verses.forEach(verse => {
             html += `<div class="verse">${verse}</div>`;
         });
@@ -71,9 +88,6 @@ class Parser {
         let html = `<div class="title">No Results</div>`;
         this.output.innerHTML = html;
     }
-
-
-
 }
 
 

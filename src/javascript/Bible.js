@@ -38,12 +38,27 @@ class Bible {
         this.baseURL = `https://davidchincharashvii.pythonanywhere.com/api` + `/${this.bibleLanguage}/${this.bibleVersion}`;
     }
 
-    async getVerses(book = 1, chapter = 1, startVerse = 1, endVerse = null) {
-        this.book = book;
+    async getVerses({bookId, chapter, verseStart, verseEnd }) {
+        this.book = bookId;
         this.chapter = chapter;
-        this.startVerse = startVerse;
-        this.endVerse = endVerse===null?startVerse:endVerse;
-        let url = `${this.baseURL}/${this.book}/${this.chapter}/${this.startVerse}/${this.endVerse}`;
+        this.startVerse = verseStart;
+        this.endVerse = verseEnd;
+
+        let url = `${this.baseURL}`;
+        switch (Object.keys(arguments[0]).length) {
+            case 3:
+                url += `/${this.book}/${this.chapter}`;
+                break;
+            case 4:
+                url += `/${this.book}/${this.chapter}/${this.startVerse}`;
+                break;
+            case 5:
+                url += `/${this.book}/${this.chapter}/${this.startVerse}/${this.endVerse}`;
+                break;
+            default:
+                break;
+        }
+
         const response = await fetch(url);
         const data = await response.json();
         return data;
