@@ -9,7 +9,11 @@
   <body>
     <div class="main-grid">
       <div class="container">
-        <input type="text" placeholder="Gen 1:10-16">
+        <input type="text" placeholder="Gen 1:10-16" list="books" id="search">
+        <datalist id="books"> 
+          <option value="გამ">გამოსვლა</option>
+          <option value="გამოცხ">გამოცხადება</option>
+        </datalist>
         <div class="result"> </div>
       </div>
       <script defer type="module" src="main.js"></script>

@@ -8,7 +8,10 @@ html
   body
     .main-grid
       .container
-        input(type="text", placeholder="Gen 1:10-16")
+        input(type="text", placeholder="Gen 1:10-16", list="books", id="search")
+        datalist#books 
+          option(value="გამ") გამოსვლა
+          option(value="გამოცხ") გამოცხადება
         .result 
       script(defer, type="module" src="main.js")
   
