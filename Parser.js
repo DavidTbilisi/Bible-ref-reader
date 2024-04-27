@@ -15,7 +15,7 @@ class Parser {
 
 
         if (reference) {
-            let regex = /([a-zA-Zა-ჰ]+)\s*(\d+)?:?(\d+)?-?(\d+)?,?.*(\d+)?/;
+            let regex = /([\d?a-zA-Zა-ჰ]+)\s*(\d+)?:?(\d+)?-?(\d+)?,?.*(\d+)?/;
             [ref, bookName, chapter, verseStart, verseEnd] = reference.match(regex);
             bookId = this.bookToID(bookName);
         } else { return };
