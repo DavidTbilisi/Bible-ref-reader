@@ -77,6 +77,9 @@ class Parser {
             html += `<div class="verse">${verse}</div>`;
         });
         this.output.innerHTML = html;
+        let firstVerse = data.verses[0][0];
+        let lastVerse = data.verses[data.verses.length - 1][0];
+        document.title = `${data.book} ${data.chapter}:${firstVerse}-${lastVerse}`
     }
 
     showLoading() {
