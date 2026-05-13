@@ -1,86 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="ka" data-theme="vellum" data-mode="reading">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ბიბლიის მუხლები</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <div class="main-grid">
-      <div class="container">
-        <input type="text" placeholder="Gen 1:10-16" list="books" id="search">
-        <datalist id="books"> 
-          <option value="დაბ">დაბ</option>
-          <option value="გამ">გამ</option>
-          <option value="ლევ">ლევ</option>
-          <option value="რიცხ">რიცხ</option>
-          <option value="რჯლ">რჯლ</option>
-          <option value="იესო">იესო</option>
-          <option value="მსაჯ">მსაჯ</option>
-          <option value="რუთ">რუთ</option>
-          <option value="1მეფ">1მეფ</option>
-          <option value="2მეფ">2მეფ</option>
-          <option value="3მეფ">3მეფ</option>
-          <option value="4მეფ">4მეფ</option>
-          <option value="1ნეშტ">1ნეშტ</option>
-          <option value="2ნეშტ">2ნეშტ</option>
-          <option value="ეზრ">ეზრ</option>
-          <option value="ნეემ">ნეემ</option>
-          <option value="ესთ">ესთ</option>
-          <option value="იობ">იობ</option>
-          <option value="ფსალმ">ფსალმ</option>
-          <option value="იგავ">იგავ</option>
-          <option value="ეკლ">ეკლ</option>
-          <option value="ქებ">ქებ</option>
-          <option value="ეს">ეს</option>
-          <option value="იერ">იერ</option>
-          <option value="გოდ">გოდ</option>
-          <option value="ეზეკ">ეზეკ</option>
-          <option value="დან">დან</option>
-          <option value="ოს">ოს</option>
-          <option value="იოელ">იოელ</option>
-          <option value="ამოს">ამოს</option>
-          <option value="აბდ">აბდ</option>
-          <option value="იონ">იონ</option>
-          <option value="მიქ">მიქ</option>
-          <option value="ნაუმ">ნაუმ</option>
-          <option value="აბაკ">აბაკ</option>
-          <option value="სოფ">სოფ</option>
-          <option value="ანგ">ანგ</option>
-          <option value="ზაქ">ზაქ</option>
-          <option value="მალ">მალ</option>
-          <option value="მათ">მათ</option>
-          <option value="მარკ">მარკ</option>
-          <option value="ლუკ">ლუკ</option>
-          <option value="იოან">იოან</option>
-          <option value="საქმე">საქმე</option>
-          <option value="იაკ">იაკ</option>
-          <option value="1პეტრ">1პეტრ</option>
-          <option value="2პეტრ">2პეტრ</option>
-          <option value="1იოან">1იოან</option>
-          <option value="2იოან">2იოან</option>
-          <option value="3იოან">3იოან</option>
-          <option value="იუდ">იუდ</option>
-          <option value="რომ">რომ</option>
-          <option value="1კორ">1კორ</option>
-          <option value="2კორ">2კორ</option>
-          <option value="გალ">გალ</option>
-          <option value="ეფეს">ეფეს</option>
-          <option value="ფილიპ">ფილიპ</option>
-          <option value="კოლ">კოლ</option>
-          <option value="1თეს">1თეს</option>
-          <option value="2თეს">2თეს</option>
-          <option value="1ტიმ">1ტიმ</option>
-          <option value="2ტიმ">2ტიმ</option>
-          <option value="ტიტ">ტიტ</option>
-          <option value="ფილ">ფილ</option>
-          <option value="ებრ">ებრ</option>
-          <option value="გამოცხ">გამოცხ</option>
-        </datalist>
-        <div class="result"> </div>
-      </div>
-      <script defer type="module" src="main.js"></script>
+    <div class="page">
+      <header class="masthead">
+        <div class="masthead-title">
+          <span class="cross">✦</span>
+          <span class="masthead-name">ბიბლიის მუხლები</span>
+        </div>
+        <div class="toolbar">
+          <button id="theme-toggle" class="icon-btn" type="button" aria-label="Toggle theme">
+            <span class="theme-light" aria-hidden="true">☉</span>
+            <span class="theme-dark" aria-hidden="true">☾</span>
+          </button>
+          <button id="presentation-toggle" class="icon-btn" type="button" aria-label="Presentation mode" title="Presentation mode (Esc to exit)">
+            <span class="mode-enter" aria-hidden="true">⤢</span>
+            <span class="mode-exit" aria-hidden="true">⤡</span>
+          </button>
+        </div>
+      </header>
+
+      <fieldset class="translations" id="translations">
+        <legend>Translations</legend>
+        <div class="translation" data-lang="ka">
+          <label><input type="checkbox" name="enabled" checked> Georgian</label>
+          <select name="version" aria-label="Georgian version">
+            <option value="geo" selected>sbs</option>
+            <option value="orthodox">orthodox</option>
+          </select>
+        </div>
+        <div class="translation" data-lang="en">
+          <label><input type="checkbox" name="enabled" checked> English</label>
+          <select name="version" aria-label="English version">
+            <option value="kjv" selected>KJV</option>
+            <option value="asv">ASV</option>
+            <option value="nkjv">NKJV</option>
+            <option value="nasb">NASB</option>
+            <option value="niv">NIV</option>
+          </select>
+        </div>
+        <div class="translation" data-lang="ru">
+          <label><input type="checkbox" name="enabled" checked> Russian</label>
+          <select name="version" aria-label="Russian version">
+            <option value="rusv" selected>Синод.</option>
+            <option value="bti">BTI</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <input type="text" placeholder="Gen 1:10-16   ·   prefix with / for full-text search" list="books" id="search" autocomplete="off">
+      <datalist id="books">
+        <option value="დაბ">დაბ</option>
+        <option value="გამ">გამ</option>
+        <option value="ლევ">ლევ</option>
+        <option value="რიცხ">რიცხ</option>
+        <option value="რჯლ">რჯლ</option>
+        <option value="იესო">იესო</option>
+        <option value="მსაჯ">მსაჯ</option>
+        <option value="რუთ">რუთ</option>
+        <option value="1მეფ">1მეფ</option>
+        <option value="2მეფ">2მეფ</option>
+        <option value="3მეფ">3მეფ</option>
+        <option value="4მეფ">4მეფ</option>
+        <option value="1ნეშტ">1ნეშტ</option>
+        <option value="2ნეშტ">2ნეშტ</option>
+        <option value="ეზრ">ეზრ</option>
+        <option value="ნეემ">ნეემ</option>
+        <option value="ესთ">ესთ</option>
+        <option value="იობ">იობ</option>
+        <option value="ფსალმ">ფსალმ</option>
+        <option value="იგავ">იგავ</option>
+        <option value="ეკლ">ეკლ</option>
+        <option value="ქებ">ქებ</option>
+        <option value="ეს">ეს</option>
+        <option value="იერ">იერ</option>
+        <option value="გოდ">გოდ</option>
+        <option value="ეზეკ">ეზეკ</option>
+        <option value="დან">დან</option>
+        <option value="ოს">ოს</option>
+        <option value="იოელ">იოელ</option>
+        <option value="ამოს">ამოს</option>
+        <option value="აბდ">აბდ</option>
+        <option value="იონ">იონ</option>
+        <option value="მიქ">მიქ</option>
+        <option value="ნაუმ">ნაუმ</option>
+        <option value="აბაკ">აბაკ</option>
+        <option value="სოფ">სოფ</option>
+        <option value="ანგ">ანგ</option>
+        <option value="ზაქ">ზაქ</option>
+        <option value="მალ">მალ</option>
+        <option value="მათ">მათ</option>
+        <option value="მარკ">მარკ</option>
+        <option value="ლუკ">ლუკ</option>
+        <option value="იოან">იოან</option>
+        <option value="საქმე">საქმე</option>
+        <option value="იაკ">იაკ</option>
+        <option value="1პეტრ">1პეტრ</option>
+        <option value="2პეტრ">2პეტრ</option>
+        <option value="1იოან">1იოან</option>
+        <option value="2იოან">2იოან</option>
+        <option value="3იოან">3იოან</option>
+        <option value="იუდ">იუდ</option>
+        <option value="რომ">რომ</option>
+        <option value="1კორ">1კორ</option>
+        <option value="2კორ">2კორ</option>
+        <option value="გალ">გალ</option>
+        <option value="ეფეს">ეფეს</option>
+        <option value="ფილიპ">ფილიპ</option>
+        <option value="კოლ">კოლ</option>
+        <option value="1თეს">1თეს</option>
+        <option value="2თეს">2თეს</option>
+        <option value="1ტიმ">1ტიმ</option>
+        <option value="2ტიმ">2ტიმ</option>
+        <option value="ტიტ">ტიტ</option>
+        <option value="ფილ">ფილ</option>
+        <option value="ებრ">ებრ</option>
+        <option value="გამოცხ">გამოცხ</option>
+      </datalist>
+
+      <div class="result" id="result"></div>
     </div>
+    <script defer type="module" src="main.js"></script>
   </body>
 </html>

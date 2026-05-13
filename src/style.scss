@@ -1,36 +1,468 @@
+/* ------------------------------------------------------------------
+   Bible reader — two themes:
+     Vellum (light)  · warm cream paper, manuscript-red rubrics
+     Compline (dark) · warm near-black, gilt amber accents
+   ------------------------------------------------------------------ */
+
 @font-face {
-  font-family: bgp_arial;
-  src: url('./bpg_arial_2009.ttf');
+  font-family: "bgp_arial";
+  src: url("./bpg_arial_2009.ttf");
+  /* Limit to Georgian + Mkhedruli supplement so Latin/Cyrillic fall through
+     to EB Garamond rather than rendering as tofu. */
+  unicode-range: U+10A0-10FF, U+2D00-2D2F;
+  font-display: swap;
 }
 
-.container {
-  display: flex;
+:root {
+  --font-display: "Cormorant Garamond", "EB Garamond", Georgia, serif;
+  --font-body: "EB Garamond", "bgp_arial", Georgia, serif;
+  --font-georgian: "bgp_arial", "EB Garamond", Georgia, serif;
+
+  --size-base: 18px;
+  --size-verse: 1.05rem;
+  --size-title: 1.85rem;
+  --size-meta: 0.78rem;
+  --line-height-verse: 1.85;
+
+  --gutter: 22px;
+  --rule-w: 1px;
+  --radius: 0;
+}
+
+/* === Theme: Vellum (light) ================================================ */
+html[data-theme="vellum"] {
+  --bg: #f3ead4;
+  --bg-noise: rgba(60, 40, 20, 0.025);
+  --surface: #faf3df;
+  --surface-elevated: #fcf7e6;
+  --ink: #1f1a13;
+  --ink-soft: #57503f;
+  --ink-faint: #8b8169;
+  --rubric: #8c1c1e;
+  --gilt: #a87f3a;
+  --rule: #d6c89f;
+  --rule-soft: #e7dcbc;
+  --focus: #6b5028;
+  --shadow: 0 1px 0 rgba(120, 90, 30, 0.06);
+}
+
+/* === Theme: Compline (dark) =============================================== */
+html[data-theme="compline"] {
+  --bg: #15110c;
+  --bg-noise: rgba(220, 180, 110, 0.025);
+  --surface: #1d1814;
+  --surface-elevated: #221c17;
+  --ink: #ecdfc4;
+  --ink-soft: #a3957c;
+  --ink-faint: #6a6151;
+  --rubric: #d3a064;
+  --gilt: #c89a5e;
+  --rule: #2a221c;
+  --rule-soft: #1f1a15;
+  --focus: #d4a76a;
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* === Base =================================================================
+   Subtle paper texture via two layered gradients; almost invisible but
+   keeps the surface from feeling like flat HTML. */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--size-base);
+  font-feature-settings: "kern", "liga", "onum", "lnum" 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
   min-height: 100vh;
-  justify-content: flex-start;
-  align-items: center;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% 0%, var(--bg-noise), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, var(--bg-noise), transparent 70%);
+}
+
+/* Scrollbar — slim, parchment-toned */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 4px; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* === Page layout ========================================================== */
+.page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px clamp(16px, 4vw, 48px);
+  display: flex;
   flex-direction: column;
-  padding: 20px;
-  input {
-    padding: 10px;
-    margin-top: 20px;
-  }
+  gap: 18px;
+  min-height: 100vh;
+}
 
-  .title {
-    text-align: center;
-    margin-top: 1rem;
-    margin-bottom: 2rem;
-    font-size: 30px;
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
+/* === Masthead ============================================================= */
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 14px;
+  border-bottom: var(--rule-w) solid var(--rule);
+  position: relative;
+}
+.masthead::after {
+  /* Double-rule, manuscript style */
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -4px;
+  height: 1px;
+  background: var(--rule);
+  opacity: 0.4;
+}
+.masthead-title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.masthead-title .cross {
+  color: var(--gilt);
+  font-size: 1.1em;
+  transform: translateY(2px);
+}
+.masthead-name {
+  font-family: var(--font-georgian);
+  font-size: 1.1rem;
+  color: var(--ink);
+}
 
-  .verse {
-    max-width: 600px;
-    line-height: 2rem;
-    font-family: "bgp_arial", sans-serif;
-    font-size: 20px;
-    border-bottom:1px solid #cdcdcd;
-    padding: 13px;
-    margin-bottom: 0.5rem;
-  }
+/* === Toolbar (theme + presentation buttons) =============================== */
+.toolbar {
+  display: flex;
+  gap: 4px;
+}
+.icon-btn {
+  background: transparent;
+  border: var(--rule-w) solid transparent;
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+.icon-btn:hover { color: var(--rubric); border-color: var(--rule); }
+.icon-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Show only the icon appropriate for the current theme/mode */
+html[data-theme="vellum"] .theme-light { display: none; }
+html[data-theme="compline"] .theme-dark { display: none; }
+html[data-mode="reading"] .mode-exit { display: none; }
+html[data-mode="presentation"] .mode-enter { display: none; }
+
+/* === Translations fieldset ================================================ */
+.translations {
+  border: var(--rule-w) solid var(--rule);
+  padding: 10px 16px 12px;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+  background: var(--surface);
+}
+.translations legend {
+  padding: 0 8px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--size-meta);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.translation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+}
+.translation label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+.translation input[type="checkbox"] {
+  accent-color: var(--rubric);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+.translation select {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  background: var(--surface-elevated);
+  color: var(--ink);
+  border: var(--rule-w) solid var(--rule);
+  padding: 3px 6px;
+  border-radius: 0;
+  cursor: pointer;
+}
+.translation select:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+/* === Search input ========================================================= */
+#search {
+  width: 100%;
+  font-family: var(--font-display);
+  font-size: 1.18rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  padding: 14px 18px;
+  background: var(--surface);
+  color: var(--ink);
+  border: var(--rule-w) solid var(--rule);
+  border-radius: 0;
+  box-shadow: var(--shadow);
+}
+#search::placeholder {
+  color: var(--ink-faint);
+  font-style: italic;
+}
+#search:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+  border-color: var(--gilt);
+}
+
+/* === Result grid ========================================================== */
+.result {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--gutter);
+  min-height: 0;
+  flex: 1;
+}
+
+.translation-result {
+  position: relative;
+  background: var(--surface);
+  border: var(--rule-w) solid var(--rule);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 240px);
+  overflow: hidden;
+}
+
+.translation-result > header {
+  flex: 0 0 auto;
+  padding: 10px 18px;
+  font-family: var(--font-display);
+  font-size: var(--size-meta);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  background: var(--surface-elevated);
+  border-bottom: var(--rule-w) solid var(--rule);
+}
+
+.translation-result .panel-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 18px 22px 32px;
+}
+
+/* === Title (book + chapter) =============================================== */
+.title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--size-title);
+  text-align: center;
+  color: var(--ink);
+  padding: 6px 0 14px;
+  margin-bottom: 12px;
+  border-bottom: var(--rule-w) solid var(--rule-soft);
+  position: relative;
+}
+.title::after {
+  /* Tiny gilt diamond ornament under the chapter title */
+  content: "✦";
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  background: var(--surface);
+  color: var(--gilt);
+  font-size: 0.7em;
+  padding: 0 8px;
+}
+
+/* === Verses =============================================================== */
+.verse {
+  font-family: var(--font-body);
+  font-size: var(--size-verse);
+  line-height: var(--line-height-verse);
+  color: var(--ink);
+  padding: 6px 0;
+  text-indent: 0;
+  hanging-punctuation: first;
+}
+.verse + .verse {
+  border-top: 1px dotted var(--rule-soft);
+}
+.translation-result[data-lang="ka"] .verse {
+  font-family: var(--font-georgian);
+  font-size: calc(var(--size-verse) + 1px);
+}
+.verse .v-num {
+  font-family: var(--font-display);
+  font-size: 0.7em;
+  font-weight: 600;
+  vertical-align: super;
+  color: var(--rubric);
+  margin-right: 0.5em;
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+
+/* === Match list (text-search results) ==================================== */
+.count {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--size-meta);
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+}
+.match {
+  padding: 10px 0;
+  border-bottom: 1px dotted var(--rule-soft);
+}
+.match:last-of-type { border-bottom: none; }
+.match a {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rubric);
+  text-decoration: none;
+  margin-bottom: 4px;
+}
+.match a:hover { color: var(--gilt); text-decoration: underline; }
+.match .text {
+  font-family: var(--font-body);
+  font-size: var(--size-verse);
+  line-height: 1.65;
+  color: var(--ink);
+}
+.more {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: var(--rule-w) solid var(--rule-soft);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--size-meta);
+  color: var(--ink-faint);
+  text-align: center;
+  letter-spacing: 0.06em;
+}
+
+/* === Error panel ========================================================== */
+.error {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--rubric);
+  padding: 14px 18px;
+  border-left: 3px solid var(--rubric);
+  background: var(--surface-elevated);
+  margin: 6px 0;
+}
+#result > .error {
+  text-align: center;
+  border-left: none;
+  border-top: 3px solid var(--rubric);
+  border-bottom: 3px solid var(--rubric);
+}
+
+/* === Presentation mode ====================================================
+   Hide all chrome and bump verse text to a size meant to be read across the
+   room. Each panel still scrolls; the masthead gets a thin exit affordance. */
+html[data-mode="presentation"] body {
+  background: var(--bg);
+}
+html[data-mode="presentation"] .page {
+  padding: 12px clamp(12px, 3vw, 36px) 24px;
+  gap: 10px;
+}
+html[data-mode="presentation"] .masthead {
+  padding-bottom: 8px;
+}
+html[data-mode="presentation"] .masthead::after { display: none; }
+html[data-mode="presentation"] .masthead-name { font-size: 0.9rem; opacity: 0.6; }
+html[data-mode="presentation"] .translations,
+html[data-mode="presentation"] #search { display: none; }
+html[data-mode="presentation"] .translation-result {
+  max-height: calc(100vh - 90px);
+}
+html[data-mode="presentation"] .translation-result > header {
+  padding: 8px 22px;
+  font-size: 0.72rem;
+}
+html[data-mode="presentation"] .translation-result .panel-body {
+  padding: 24px clamp(20px, 4vw, 56px) 60px;
+}
+html[data-mode="presentation"] .title {
+  font-size: 3.4rem;
+  font-weight: 500;
+  padding: 14px 0 24px;
+  margin-bottom: 24px;
+}
+html[data-mode="presentation"] .verse {
+  font-size: 1.85rem;
+  line-height: 2.05;
+  padding: 14px 0;
+  max-width: 38ch;
+  margin: 0 auto;
+}
+html[data-mode="presentation"] .translation-result[data-lang="ka"] .verse {
+  font-size: 1.95rem;
+}
+html[data-mode="presentation"] .verse .v-num {
+  font-size: 0.58em;
+}
+html[data-mode="presentation"] .match .text {
+  font-size: 1.4rem;
+  line-height: 1.85;
+}
+
+/* === Small screens ======================================================== */
+@media (max-width: 720px) {
+  .page { padding: 18px 14px; gap: 14px; }
+  .masthead-name { display: none; }
+  .translations { gap: 10px 14px; padding: 8px 10px 10px; }
+  .result { grid-template-columns: 1fr; gap: 14px; }
+  .translation-result { max-height: 70vh; }
+  html[data-mode="presentation"] .title { font-size: 2rem; }
+  html[data-mode="presentation"] .verse { font-size: 1.35rem; line-height: 1.85; }
 }

@@ -1,44 +1,39 @@
 /*
-Get Bible Text
-URL: /bible
-Method: GET
-URL Params:
-lang: Language code (e.g., "en" for English).
-version: Bible version code (e.g., "kjv" for King James Version).
-book: Book number (e.g., 1 for Genesis).
-chapter: Chapter number.
-verse_start: (Optional) Starting verse number.
-verse_end: (Optional) Ending verse number.
-extra_verses: (Optional) Additional verses.
+Multilingual Bible REST client.
+
+Wraps three endpoints exposed by github.com/DavidTbilisi/Georgian_bible_api:
+
+  - direct lookup    GET /api/<lang>/<ver>/<book>[/<ch>[/<vs>[/<ve>]]]
+  - reference parser GET /api/search/<lang>/<ver>/<query>
+  - full-text search GET /api/textsearch/<lang>/<ver>/<term>
+
+Errors come back as { error: "..." } with HTTP 404 — callers should check
+for a truthy `error` field rather than relying on response.ok.
 */
 
-
 class Bible {
-    constructor() {
-        this.baseURL = `https://davidchincharashvii.pythonanywhere.com/api`;
-        this.bibleVersion = "geo";
-        this.bibleLanguage = "ka";
-        this.chapter = 1;
-        this.book = 1;
-        this.startVerse = 1;
-        this.endVerse = this.startVerse;
-        this.books = [];
+    constructor({ lang = "ka", version = "geo" } = {}) {
+        this.host = "https://davidchincharashvii.pythonanywhere.com";
+        this.bibleLanguage = lang;
+        this.bibleVersion = version;
+        this._refreshBase();
+    }
 
-        this.setLanguage();
-        this.setVersion();
+    _refreshBase() {
+        this.baseURL = `${this.host}/api/${this.bibleLanguage}/${this.bibleVersion}`;
     }
 
     setVersion(version = "geo") {
         this.bibleVersion = version;
-        this.baseURL = `https://davidchincharashvii.pythonanywhere.com/api` + `/${this.bibleLanguage}/${this.bibleVersion}`;
+        this._refreshBase();
     }
 
     setLanguage(language = "ka") {
         this.bibleLanguage = language;
-        this.baseURL = `https://davidchincharashvii.pythonanywhere.com/api` + `/${this.bibleLanguage}/${this.bibleVersion}`;
+        this._refreshBase();
     }
 
-    async getVerses({bookId, chapter, verseStart, verseEnd }) {
+    async getVerses({ bookId, chapter, verseStart, verseEnd }) {
         this.book = bookId;
         this.chapter = chapter;
         this.startVerse = verseStart;
@@ -62,6 +57,18 @@ class Bible {
         const response = await fetch(url);
         const data = await response.json();
         return data;
+    }
+
+    async parseReference(query, { lang, version } = {}) {
+        const url = `${this.host}/api/search/${lang || this.bibleLanguage}/${version || this.bibleVersion}/${encodeURIComponent(query)}`;
+        const response = await fetch(url);
+        return response.json();
+    }
+
+    async textSearch(term, { lang, version } = {}) {
+        const url = `${this.host}/api/textsearch/${lang || this.bibleLanguage}/${version || this.bibleVersion}/${encodeURIComponent(term)}`;
+        const response = await fetch(url);
+        return response.json();
     }
 }
 

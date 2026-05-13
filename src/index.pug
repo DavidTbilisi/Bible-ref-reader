@@ -1,81 +1,119 @@
 doctype
-html
+html(lang="ka", data-theme="vellum", data-mode="reading")
   head
     meta(charset="utf-8")
     meta(name="viewport", content="width=device-width, initial-scale=1")
     title ბიბლიის მუხლები
+    link(rel="preconnect", href="https://fonts.googleapis.com")
+    link(rel="preconnect", href="https://fonts.gstatic.com", crossorigin)
+    link(href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap", rel="stylesheet")
     link(rel="stylesheet", href="style.css")
   body
-    .main-grid
-      .container
-        input(type="text", placeholder="Gen 1:10-16", list="books", id="search")
-        datalist#books 
-          option(value="დაბ") დაბ
-          option(value="გამ") გამ
-          option(value="ლევ") ლევ
-          option(value="რიცხ") რიცხ
-          option(value="რჯლ") რჯლ
-          option(value="იესო") იესო
-          option(value="მსაჯ") მსაჯ
-          option(value="რუთ") რუთ
-          option(value="1მეფ") 1მეფ
-          option(value="2მეფ") 2მეფ
-          option(value="3მეფ") 3მეფ
-          option(value="4მეფ") 4მეფ
-          option(value="1ნეშტ") 1ნეშტ
-          option(value="2ნეშტ") 2ნეშტ
-          option(value="ეზრ") ეზრ
-          option(value="ნეემ") ნეემ
-          option(value="ესთ") ესთ
-          option(value="იობ") იობ
-          option(value="ფსალმ") ფსალმ
-          option(value="იგავ") იგავ
-          option(value="ეკლ") ეკლ
-          option(value="ქებ") ქებ
-          option(value="ეს") ეს
-          option(value="იერ") იერ
-          option(value="გოდ") გოდ
-          option(value="ეზეკ") ეზეკ
-          option(value="დან") დან
-          option(value="ოს") ოს
-          option(value="იოელ") იოელ
-          option(value="ამოს") ამოს
-          option(value="აბდ") აბდ
-          option(value="იონ") იონ
-          option(value="მიქ") მიქ
-          option(value="ნაუმ") ნაუმ
-          option(value="აბაკ") აბაკ
-          option(value="სოფ") სოფ
-          option(value="ანგ") ანგ
-          option(value="ზაქ") ზაქ
-          option(value="მალ") მალ
-          option(value="მათ") მათ
-          option(value="მარკ") მარკ
-          option(value="ლუკ") ლუკ
-          option(value="იოან") იოან
-          option(value="საქმე") საქმე
-          option(value="იაკ") იაკ
-          option(value="1პეტრ") 1პეტრ
-          option(value="2პეტრ") 2პეტრ
-          option(value="1იოან") 1იოან
-          option(value="2იოან") 2იოან
-          option(value="3იოან") 3იოან
-          option(value="იუდ") იუდ
-          option(value="რომ") რომ
-          option(value="1კორ") 1კორ
-          option(value="2კორ") 2კორ
-          option(value="გალ") გალ
-          option(value="ეფეს") ეფეს
-          option(value="ფილიპ") ფილიპ
-          option(value="კოლ") კოლ
-          option(value="1თეს") 1თეს
-          option(value="2თეს") 2თეს
-          option(value="1ტიმ") 1ტიმ
-          option(value="2ტიმ") 2ტიმ
-          option(value="ტიტ") ტიტ
-          option(value="ფილ") ფილ
-          option(value="ებრ") ებრ
-          option(value="გამოცხ") გამოცხ
-        .result 
+    .page
+      header.masthead
+        .masthead-title
+          span.cross ✦
+          span.masthead-name ბიბლიის მუხლები
+        .toolbar
+          button#theme-toggle.icon-btn(type="button", aria-label="Toggle theme")
+            span.theme-light(aria-hidden="true") ☉
+            span.theme-dark(aria-hidden="true") ☾
+          button#presentation-toggle.icon-btn(type="button", aria-label="Presentation mode", title="Presentation mode (Esc to exit)")
+            span.mode-enter(aria-hidden="true") ⤢
+            span.mode-exit(aria-hidden="true") ⤡
+      fieldset.translations#translations
+        legend Translations
+        .translation(data-lang="ka")
+          label
+            input(type="checkbox", name="enabled", checked)
+            |  Georgian
+          select(name="version", aria-label="Georgian version")
+            option(value="geo", selected) sbs
+            option(value="orthodox") orthodox
+        .translation(data-lang="en")
+          label
+            input(type="checkbox", name="enabled", checked)
+            |  English
+          select(name="version", aria-label="English version")
+            option(value="kjv", selected) KJV
+            option(value="asv") ASV
+            option(value="nkjv") NKJV
+            option(value="nasb") NASB
+            option(value="niv") NIV
+        .translation(data-lang="ru")
+          label
+            input(type="checkbox", name="enabled", checked)
+            |  Russian
+          select(name="version", aria-label="Russian version")
+            option(value="rusv", selected) Синод.
+            option(value="bti") BTI
+      input(type="text", placeholder="Gen 1:10-16   ·   prefix with / for full-text search", list="books", id="search", autocomplete="off")
+      datalist#books
+        option(value="დაბ") დაბ
+        option(value="გამ") გამ
+        option(value="ლევ") ლევ
+        option(value="რიცხ") რიცხ
+        option(value="რჯლ") რჯლ
+        option(value="იესო") იესო
+        option(value="მსაჯ") მსაჯ
+        option(value="რუთ") რუთ
+        option(value="1მეფ") 1მეფ
+        option(value="2მეფ") 2მეფ
+        option(value="3მეფ") 3მეფ
+        option(value="4მეფ") 4მეფ
+        option(value="1ნეშტ") 1ნეშტ
+        option(value="2ნეშტ") 2ნეშტ
+        option(value="ეზრ") ეზრ
+        option(value="ნეემ") ნეემ
+        option(value="ესთ") ესთ
+        option(value="იობ") იობ
+        option(value="ფსალმ") ფსალმ
+        option(value="იგავ") იგავ
+        option(value="ეკლ") ეკლ
+        option(value="ქებ") ქებ
+        option(value="ეს") ეს
+        option(value="იერ") იერ
+        option(value="გოდ") გოდ
+        option(value="ეზეკ") ეზეკ
+        option(value="დან") დან
+        option(value="ოს") ოს
+        option(value="იოელ") იოელ
+        option(value="ამოს") ამოს
+        option(value="აბდ") აბდ
+        option(value="იონ") იონ
+        option(value="მიქ") მიქ
+        option(value="ნაუმ") ნაუმ
+        option(value="აბაკ") აბაკ
+        option(value="სოფ") სოფ
+        option(value="ანგ") ანგ
+        option(value="ზაქ") ზაქ
+        option(value="მალ") მალ
+        option(value="მათ") მათ
+        option(value="მარკ") მარკ
+        option(value="ლუკ") ლუკ
+        option(value="იოან") იოან
+        option(value="საქმე") საქმე
+        option(value="იაკ") იაკ
+        option(value="1პეტრ") 1პეტრ
+        option(value="2პეტრ") 2პეტრ
+        option(value="1იოან") 1იოან
+        option(value="2იოან") 2იოან
+        option(value="3იოან") 3იოან
+        option(value="იუდ") იუდ
+        option(value="რომ") რომ
+        option(value="1კორ") 1კორ
+        option(value="2კორ") 2კორ
+        option(value="გალ") გალ
+        option(value="ეფეს") ეფეს
+        option(value="ფილიპ") ფილიპ
+        option(value="კოლ") კოლ
+        option(value="1თეს") 1თეს
+        option(value="2თეს") 2თეს
+        option(value="1ტიმ") 1ტიმ
+        option(value="2ტიმ") 2ტიმ
+        option(value="ტიტ") ტიტ
+        option(value="ფილ") ფილ
+        option(value="ებრ") ებრ
+        option(value="გამოცხ") გამოცხ
+      .result#result
       script(defer, type="module" src="main.js")
-  
