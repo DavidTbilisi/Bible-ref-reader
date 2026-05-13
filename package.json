@@ -8,6 +8,8 @@
     "test": "playwright test",
     "test:smoke": "playwright test --grep @smoke",
     "test:mocked": "playwright test --grep-invert @smoke",
+    "test:visual": "playwright test --grep @visual",
+    "test:visual:update": "playwright test --grep @visual --update-snapshots",
     "coverage": "playwright test --grep-invert @smoke"
   },
   "devDependencies": {

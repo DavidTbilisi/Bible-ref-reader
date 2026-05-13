@@ -1,0 +1,95 @@
+name: tests
+
+# Mocked suite runs on every push/PR to master (hermetic, ~30s).
+# Live-API smoke runs daily at 06:00 UTC and on manual dispatch — it hits
+# https://davidchincharashvii.pythonanywhere.com, so we don't want PR merges
+# gated on third-party availability. Failures here flag API contract drift.
+on:
+  push:
+    branches: [master]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      update_visual_baselines:
+        description: 'Regenerate visual baselines and upload as artifact (manual commit required)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  mocked:
+    name: Mocked suite
+    runs-on: ubuntu-latest
+    if: github.event.inputs.update_visual_baselines != 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:mocked
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
+          if-no-files-found: ignore
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  update-baselines:
+    name: Update visual baselines
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.update_visual_baselines == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:visual:update
+      - uses: actions/upload-artifact@v4
+        with:
+          name: updated-snapshots
+          path: tests/e2e/visual.spec.js-snapshots/
+          retention-days: 14
+          if-no-files-found: error
+
+  smoke:
+    name: Live-API smoke
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:smoke
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-trace
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 14
+          if-no-files-found: ignore

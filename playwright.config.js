@@ -21,10 +21,13 @@ module.exports = defineConfig({
             return (
               url.endsWith('/Bible.js') ||
               url.endsWith('/Parser.js') ||
-              url.endsWith('/main.js')
+              url.endsWith('/main.js') ||
+              url.endsWith('/book-registry.js') ||
+              url.endsWith('/keynav.js')
             );
           },
-          sourceFilter: (sourcePath) => /\/(Bible|Parser|main)\.js$/.test(sourcePath),
+          sourceFilter: (sourcePath) =>
+            /\/(Bible|Parser|main|book-registry|keynav)\.js$/.test(sourcePath),
           reports: [
             ['v8'],
             ['v8-json', { outputFile: 'coverage-summary.json' }],
@@ -38,6 +41,13 @@ module.exports = defineConfig({
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
+  },
+  expect: {
+    toHaveScreenshot: {
+      // Visual baselines are committed for Linux only — see visual.spec.js.
+      // Be forgiving of sub-pixel font hinting; catch layout/colour shifts.
+      maxDiffPixelRatio: 0.01,
+    },
   },
   projects: [
     {
