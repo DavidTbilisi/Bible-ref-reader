@@ -405,46 +405,109 @@ html[data-mode="presentation"] .mode-enter { display: none; }
   border-bottom: 3px solid var(--rubric);
 }
 
+/* === Locator (presentation-mode location indicator) =======================
+   Hidden in reading mode; takes the masthead's title slot in presentation
+   and reflects the topmost visible verse, e.g. "John 3:16". */
+.locator-text { display: none; }
+
 /* === Presentation mode ====================================================
-   Hide all chrome and bump verse text to a size meant to be read across the
-   room. Each panel still scrolls; the masthead gets a thin exit affordance. */
-html[data-mode="presentation"] body {
-  background: var(--bg);
-}
+   Full-bleed reader: hide all chrome, keep only a thin sticky bar at the top
+   showing the current location (book chapter:verse) plus theme/exit icons.
+   Search is hidden until the reader starts typing — see html.searching. */
+html[data-mode="presentation"] body { background: var(--bg); }
+
+/* Full-screen page: no padding, no max-width, fills the viewport. */
 html[data-mode="presentation"] .page {
-  padding: 12px clamp(12px, 3vw, 36px) 24px;
-  gap: 10px;
+  max-width: none;
+  padding: 0;
+  gap: 0;
+  min-height: 100vh;
 }
+
+/* Masthead becomes a thin sticky locator bar. The title is replaced by
+   #locator-text (updated by Parser.updateLocator on scroll). */
 html[data-mode="presentation"] .masthead {
-  padding-bottom: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 8px clamp(14px, 3vw, 32px);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-bottom: var(--rule-w) solid var(--rule-soft);
+  align-items: center;
 }
 html[data-mode="presentation"] .masthead::after { display: none; }
-html[data-mode="presentation"] .masthead-name { font-size: 0.9rem; opacity: 0.6; }
-html[data-mode="presentation"] .translations,
-html[data-mode="presentation"] #search { display: none; }
-html[data-mode="presentation"] .translation-result {
-  max-height: calc(100vh - 90px);
+html[data-mode="presentation"] .masthead-name,
+html[data-mode="presentation"] .masthead-title .cross { display: none; }
+html[data-mode="presentation"] .locator-text {
+  display: inline;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  font-feature-settings: "lnum";
 }
+html[data-mode="presentation"] .translation-result[data-lang="ka"] ~ * .locator-text,
+html[data-mode="presentation"] .locator-text {
+  font-family: var(--font-georgian);
+}
+
+/* Hide all non-reading chrome in presentation. */
+html[data-mode="presentation"] .translations { display: none; }
+
+/* Search input is hidden by default; pops as a centered overlay the moment
+   the reader starts typing (main.js adds html.searching). */
+html[data-mode="presentation"] #search { display: none; }
+html[data-mode="presentation"].searching #search {
+  display: block;
+  position: fixed;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(640px, calc(100vw - 32px));
+  z-index: 30;
+  font-size: 1.35rem;
+  padding: 16px 22px;
+  background: var(--surface-elevated);
+  border: var(--rule-w) solid var(--gilt);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Result grid fills the remaining viewport. */
+html[data-mode="presentation"] .result {
+  gap: 0;
+  flex: 1;
+}
+html[data-mode="presentation"] .translation-result {
+  max-height: calc(100vh - 50px);
+  border: none;
+  border-left: var(--rule-w) solid var(--rule-soft);
+  background: transparent;
+}
+html[data-mode="presentation"] .translation-result:first-child { border-left: none; }
 html[data-mode="presentation"] .translation-result > header {
-  padding: 8px 22px;
-  font-size: 0.72rem;
+  padding: 6px 22px;
+  font-size: 0.66rem;
+  opacity: 0.55;
+  background: transparent;
+  border-bottom: none;
 }
 html[data-mode="presentation"] .translation-result .panel-body {
-  padding: 24px clamp(20px, 4vw, 56px) 60px;
+  padding: 32px clamp(24px, 5vw, 72px) 80px;
 }
-html[data-mode="presentation"] .title {
-  font-size: 3.4rem;
-  font-weight: 500;
-  padding: 14px 0 24px;
-  margin-bottom: 24px;
-}
+/* The big book+chapter title scrolls away — the sticky locator covers it. */
+html[data-mode="presentation"] .title { display: none; }
 html[data-mode="presentation"] .verse {
   font-size: 1.85rem;
   line-height: 2.05;
   padding: 14px 0;
   max-width: 38ch;
   margin: 0 auto;
+  border-top: none;
 }
+html[data-mode="presentation"] .verse + .verse { border-top: none; }
 html[data-mode="presentation"] .translation-result[data-lang="ka"] .verse {
   font-size: 1.95rem;
 }
@@ -463,6 +526,6 @@ html[data-mode="presentation"] .match .text {
   .translations { gap: 10px 14px; padding: 8px 10px 10px; }
   .result { grid-template-columns: 1fr; gap: 14px; }
   .translation-result { max-height: 70vh; }
-  html[data-mode="presentation"] .title { font-size: 2rem; }
   html[data-mode="presentation"] .verse { font-size: 1.35rem; line-height: 1.85; }
+  html[data-mode="presentation"].searching #search { top: 56px; font-size: 1.15rem; padding: 12px 16px; }
 }

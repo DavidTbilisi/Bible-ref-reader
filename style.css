@@ -1,9 +1,9 @@
+@charset "UTF-8";
 /* ------------------------------------------------------------------
    Bible reader — two themes:
      Vellum (light)  · warm cream paper, manuscript-red rubrics
      Compline (dark) · warm near-black, gilt amber accents
    ------------------------------------------------------------------ */
-
 @font-face {
   font-family: "bgp_arial";
   src: url("./bpg_arial_2009.ttf");
@@ -12,25 +12,22 @@
   unicode-range: U+10A0-10FF, U+2D00-2D2F;
   font-display: swap;
 }
-
 :root {
   --font-display: "Cormorant Garamond", "EB Garamond", Georgia, serif;
   --font-body: "EB Garamond", "bgp_arial", Georgia, serif;
   --font-georgian: "bgp_arial", "EB Garamond", Georgia, serif;
-
   --size-base: 18px;
   --size-verse: 1.05rem;
   --size-title: 1.85rem;
   --size-meta: 0.78rem;
   --line-height-verse: 1.85;
-
   --gutter: 22px;
   --rule-w: 1px;
   --radius: 0;
 }
 
 /* === Theme: Vellum (light) ================================================ */
-html[data-theme="vellum"] {
+html[data-theme=vellum] {
   --bg: #f3ead4;
   --bg-noise: rgba(60, 40, 20, 0.025);
   --surface: #faf3df;
@@ -47,7 +44,7 @@ html[data-theme="vellum"] {
 }
 
 /* === Theme: Compline (dark) =============================================== */
-html[data-theme="compline"] {
+html[data-theme=compline] {
   --bg: #15110c;
   --bg-noise: rgba(220, 180, 110, 0.025);
   --surface: #1d1814;
@@ -66,7 +63,9 @@ html[data-theme="compline"] {
 /* === Base =================================================================
    Subtle paper texture via two layered gradients; almost invisible but
    keeps the surface from feeling like flat HTML. */
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 html, body {
   margin: 0;
@@ -83,9 +82,7 @@ html, body {
 
 body {
   min-height: 100vh;
-  background-image:
-    radial-gradient(ellipse 80% 60% at 50% 0%, var(--bg-noise), transparent 70%),
-    radial-gradient(ellipse 60% 40% at 50% 100%, var(--bg-noise), transparent 70%);
+  background-image: radial-gradient(ellipse 80% 60% at 50% 0%, var(--bg-noise), transparent 70%), radial-gradient(ellipse 60% 40% at 50% 100%, var(--bg-noise), transparent 70%);
 }
 
 /* Scrollbar — slim, parchment-toned */
@@ -93,9 +90,20 @@ body {
   scrollbar-width: thin;
   scrollbar-color: var(--rule) transparent;
 }
-*::-webkit-scrollbar { width: 8px; height: 8px; }
-*::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 4px; }
-*::-webkit-scrollbar-track { background: transparent; }
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--rule);
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
 
 /* === Page layout ========================================================== */
 .page {
@@ -117,15 +125,19 @@ body {
   border-bottom: var(--rule-w) solid var(--rule);
   position: relative;
 }
+
 .masthead::after {
   /* Double-rule, manuscript style */
   content: "";
   position: absolute;
-  left: 0; right: 0; bottom: -4px;
+  left: 0;
+  right: 0;
+  bottom: -4px;
   height: 1px;
   background: var(--rule);
   opacity: 0.4;
 }
+
 .masthead-title {
   display: flex;
   align-items: baseline;
@@ -134,11 +146,13 @@ body {
   font-weight: 500;
   letter-spacing: 0.02em;
 }
+
 .masthead-title .cross {
   color: var(--gilt);
   font-size: 1.1em;
   transform: translateY(2px);
 }
+
 .masthead-name {
   font-family: var(--font-georgian);
   font-size: 1.1rem;
@@ -150,6 +164,7 @@ body {
   display: flex;
   gap: 4px;
 }
+
 .icon-btn {
   background: transparent;
   border: var(--rule-w) solid transparent;
@@ -164,14 +179,33 @@ body {
   cursor: pointer;
   transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
 }
-.icon-btn:hover { color: var(--rubric); border-color: var(--rule); }
-.icon-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.icon-btn:hover {
+  color: var(--rubric);
+  border-color: var(--rule);
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
 
 /* Show only the icon appropriate for the current theme/mode */
-html[data-theme="vellum"] .theme-light { display: none; }
-html[data-theme="compline"] .theme-dark { display: none; }
-html[data-mode="reading"] .mode-exit { display: none; }
-html[data-mode="presentation"] .mode-enter { display: none; }
+html[data-theme=vellum] .theme-light {
+  display: none;
+}
+
+html[data-theme=compline] .theme-dark {
+  display: none;
+}
+
+html[data-mode=reading] .mode-exit {
+  display: none;
+}
+
+html[data-mode=presentation] .mode-enter {
+  display: none;
+}
 
 /* === Translations fieldset ================================================ */
 .translations {
@@ -183,6 +217,7 @@ html[data-mode="presentation"] .mode-enter { display: none; }
   align-items: center;
   background: var(--surface);
 }
+
 .translations legend {
   padding: 0 8px;
   font-family: var(--font-display);
@@ -192,12 +227,14 @@ html[data-mode="presentation"] .mode-enter { display: none; }
   text-transform: uppercase;
   color: var(--ink-faint);
 }
+
 .translation {
   display: flex;
   align-items: center;
   gap: 8px;
   font-family: var(--font-display);
 }
+
 .translation label {
   display: inline-flex;
   align-items: center;
@@ -206,12 +243,14 @@ html[data-mode="presentation"] .mode-enter { display: none; }
   font-size: 0.95rem;
   color: var(--ink);
 }
-.translation input[type="checkbox"] {
+
+.translation input[type=checkbox] {
   accent-color: var(--rubric);
   width: 14px;
   height: 14px;
   cursor: pointer;
 }
+
 .translation select {
   font-family: var(--font-display);
   font-size: 0.88rem;
@@ -222,6 +261,7 @@ html[data-mode="presentation"] .mode-enter { display: none; }
   border-radius: 0;
   cursor: pointer;
 }
+
 .translation select:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 1px;
@@ -241,10 +281,12 @@ html[data-mode="presentation"] .mode-enter { display: none; }
   border-radius: 0;
   box-shadow: var(--shadow);
 }
+
 #search::placeholder {
   color: var(--ink-faint);
   font-style: italic;
 }
+
 #search:focus {
   outline: 2px solid var(--focus);
   outline-offset: -2px;
@@ -301,6 +343,7 @@ html[data-mode="presentation"] .mode-enter { display: none; }
   border-bottom: var(--rule-w) solid var(--rule-soft);
   position: relative;
 }
+
 .title::after {
   /* Tiny gilt diamond ornament under the chapter title */
   content: "✦";
@@ -324,13 +367,16 @@ html[data-mode="presentation"] .mode-enter { display: none; }
   text-indent: 0;
   hanging-punctuation: first;
 }
+
 .verse + .verse {
   border-top: 1px dotted var(--rule-soft);
 }
-.translation-result[data-lang="ka"] .verse {
+
+.translation-result[data-lang=ka] .verse {
   font-family: var(--font-georgian);
   font-size: calc(var(--size-verse) + 1px);
 }
+
 .verse .v-num {
   font-family: var(--font-display);
   font-size: 0.7em;
@@ -352,11 +398,16 @@ html[data-mode="presentation"] .mode-enter { display: none; }
   margin-bottom: 14px;
   text-transform: uppercase;
 }
+
 .match {
   padding: 10px 0;
   border-bottom: 1px dotted var(--rule-soft);
 }
-.match:last-of-type { border-bottom: none; }
+
+.match:last-of-type {
+  border-bottom: none;
+}
+
 .match a {
   display: inline-block;
   font-family: var(--font-display);
@@ -368,13 +419,19 @@ html[data-mode="presentation"] .mode-enter { display: none; }
   text-decoration: none;
   margin-bottom: 4px;
 }
-.match a:hover { color: var(--gilt); text-decoration: underline; }
+
+.match a:hover {
+  color: var(--gilt);
+  text-decoration: underline;
+}
+
 .match .text {
   font-family: var(--font-body);
   font-size: var(--size-verse);
   line-height: 1.65;
   color: var(--ink);
 }
+
 .more {
   margin-top: 14px;
   padding-top: 12px;
@@ -398,6 +455,7 @@ html[data-mode="presentation"] .mode-enter { display: none; }
   background: var(--surface-elevated);
   margin: 6px 0;
 }
+
 #result > .error {
   text-align: center;
   border-left: none;
@@ -405,64 +463,182 @@ html[data-mode="presentation"] .mode-enter { display: none; }
   border-bottom: 3px solid var(--rubric);
 }
 
+/* === Locator (presentation-mode location indicator) =======================
+   Hidden in reading mode; takes the masthead's title slot in presentation
+   and reflects the topmost visible verse, e.g. "John 3:16". */
+.locator-text {
+  display: none;
+}
+
 /* === Presentation mode ====================================================
-   Hide all chrome and bump verse text to a size meant to be read across the
-   room. Each panel still scrolls; the masthead gets a thin exit affordance. */
-html[data-mode="presentation"] body {
+   Full-bleed reader: hide all chrome, keep only a thin sticky bar at the top
+   showing the current location (book chapter:verse) plus theme/exit icons.
+   Search is hidden until the reader starts typing — see html.searching. */
+html[data-mode=presentation] body {
   background: var(--bg);
 }
-html[data-mode="presentation"] .page {
-  padding: 12px clamp(12px, 3vw, 36px) 24px;
-  gap: 10px;
+
+/* Full-screen page: no padding, no max-width, fills the viewport. */
+html[data-mode=presentation] .page {
+  max-width: none;
+  padding: 0;
+  gap: 0;
+  min-height: 100vh;
 }
-html[data-mode="presentation"] .masthead {
-  padding-bottom: 8px;
+
+/* Masthead becomes a thin sticky locator bar. The title is replaced by
+   #locator-text (updated by Parser.updateLocator on scroll). */
+html[data-mode=presentation] .masthead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 8px clamp(14px, 3vw, 32px);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-bottom: var(--rule-w) solid var(--rule-soft);
+  align-items: center;
 }
-html[data-mode="presentation"] .masthead::after { display: none; }
-html[data-mode="presentation"] .masthead-name { font-size: 0.9rem; opacity: 0.6; }
-html[data-mode="presentation"] .translations,
-html[data-mode="presentation"] #search { display: none; }
-html[data-mode="presentation"] .translation-result {
-  max-height: calc(100vh - 90px);
+
+html[data-mode=presentation] .masthead::after {
+  display: none;
 }
-html[data-mode="presentation"] .translation-result > header {
-  padding: 8px 22px;
-  font-size: 0.72rem;
+
+html[data-mode=presentation] .masthead-name,
+html[data-mode=presentation] .masthead-title .cross {
+  display: none;
 }
-html[data-mode="presentation"] .translation-result .panel-body {
-  padding: 24px clamp(20px, 4vw, 56px) 60px;
-}
-html[data-mode="presentation"] .title {
-  font-size: 3.4rem;
+
+html[data-mode=presentation] .locator-text {
+  display: inline;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
   font-weight: 500;
-  padding: 14px 0 24px;
-  margin-bottom: 24px;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  font-feature-settings: "lnum";
 }
-html[data-mode="presentation"] .verse {
+
+html[data-mode=presentation] .translation-result[data-lang=ka] ~ * .locator-text,
+html[data-mode=presentation] .locator-text {
+  font-family: var(--font-georgian);
+}
+
+/* Hide all non-reading chrome in presentation. */
+html[data-mode=presentation] .translations {
+  display: none;
+}
+
+/* Search input is hidden by default; pops as a centered overlay the moment
+   the reader starts typing (main.js adds html.searching). */
+html[data-mode=presentation] #search {
+  display: none;
+}
+
+html[data-mode=presentation].searching #search {
+  display: block;
+  position: fixed;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(640px, 100vw - 32px);
+  z-index: 30;
+  font-size: 1.35rem;
+  padding: 16px 22px;
+  background: var(--surface-elevated);
+  border: var(--rule-w) solid var(--gilt);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Result grid fills the remaining viewport. */
+html[data-mode=presentation] .result {
+  gap: 0;
+  flex: 1;
+}
+
+html[data-mode=presentation] .translation-result {
+  max-height: calc(100vh - 50px);
+  border: none;
+  border-left: var(--rule-w) solid var(--rule-soft);
+  background: transparent;
+}
+
+html[data-mode=presentation] .translation-result:first-child {
+  border-left: none;
+}
+
+html[data-mode=presentation] .translation-result > header {
+  padding: 6px 22px;
+  font-size: 0.66rem;
+  opacity: 0.55;
+  background: transparent;
+  border-bottom: none;
+}
+
+html[data-mode=presentation] .translation-result .panel-body {
+  padding: 32px clamp(24px, 5vw, 72px) 80px;
+}
+
+/* The big book+chapter title scrolls away — the sticky locator covers it. */
+html[data-mode=presentation] .title {
+  display: none;
+}
+
+html[data-mode=presentation] .verse {
   font-size: 1.85rem;
   line-height: 2.05;
   padding: 14px 0;
   max-width: 38ch;
   margin: 0 auto;
+  border-top: none;
 }
-html[data-mode="presentation"] .translation-result[data-lang="ka"] .verse {
+
+html[data-mode=presentation] .verse + .verse {
+  border-top: none;
+}
+
+html[data-mode=presentation] .translation-result[data-lang=ka] .verse {
   font-size: 1.95rem;
 }
-html[data-mode="presentation"] .verse .v-num {
+
+html[data-mode=presentation] .verse .v-num {
   font-size: 0.58em;
 }
-html[data-mode="presentation"] .match .text {
+
+html[data-mode=presentation] .match .text {
   font-size: 1.4rem;
   line-height: 1.85;
 }
 
 /* === Small screens ======================================================== */
 @media (max-width: 720px) {
-  .page { padding: 18px 14px; gap: 14px; }
-  .masthead-name { display: none; }
-  .translations { gap: 10px 14px; padding: 8px 10px 10px; }
-  .result { grid-template-columns: 1fr; gap: 14px; }
-  .translation-result { max-height: 70vh; }
-  html[data-mode="presentation"] .title { font-size: 2rem; }
-  html[data-mode="presentation"] .verse { font-size: 1.35rem; line-height: 1.85; }
+  .page {
+    padding: 18px 14px;
+    gap: 14px;
+  }
+  .masthead-name {
+    display: none;
+  }
+  .translations {
+    gap: 10px 14px;
+    padding: 8px 10px 10px;
+  }
+  .result {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .translation-result {
+    max-height: 70vh;
+  }
+  html[data-mode=presentation] .verse {
+    font-size: 1.35rem;
+    line-height: 1.85;
+  }
+  html[data-mode=presentation].searching #search {
+    top: 56px;
+    font-size: 1.15rem;
+    padding: 12px 16px;
+  }
 }
+
+/*# sourceMappingURL=style.css.map */

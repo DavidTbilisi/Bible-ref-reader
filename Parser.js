@@ -12,6 +12,8 @@ tagged with `data-v="<verse-number>"` so panels can be scroll-synced by
 verse rather than by pixel offset.
 */
 
+import { parseQuery, bookIdFor } from "./book-registry.js";
+
 const TEXT_SEARCH_PREFIX = "/";
 const MAX_TEXT_MATCHES = 50;
 const DEBOUNCE_MS = 180;
@@ -92,11 +94,35 @@ class Parser {
         try {
             const data = textMode
                 ? await this.bible.textSearch(query, opts)
-                : await this.bible.parseReference(query, opts);
+                : await this.referenceLookup(sel, query, opts);
             return { sel, data };
         } catch (err) {
             return { sel, data: null, networkError: err };
         }
+    }
+
+    /**
+     * Resolve a reference for a single translation:
+     *   1. Parse client-side to a numeric book ID for this language's canon.
+     *      Use direct lookup — this bypasses the server's synonym table
+     *      entirely and works the same for every language and version.
+     *   2. If we can't parse it (unknown book, comma-separated multi-range,
+     *      etc.), fall back to /api/search/ with the original query —
+     *      best-effort against whatever synonyms the server happens to know.
+     */
+    async referenceLookup(sel, query, opts) {
+        const parsed = parseQuery(query);
+        if (parsed) {
+            return this.bible.directLookup({
+                lang: sel.lang,
+                version: sel.version,
+                bookId: bookIdFor(parsed.book, sel.lang),
+                chapter: parsed.chapter,
+                verseStart: parsed.verseStart,
+                verseEnd: parsed.verseEnd,
+            });
+        }
+        return this.bible.parseReference(query, opts);
     }
 
     showLoading(selections) {
@@ -111,9 +137,44 @@ class Parser {
     }
 
     render(results, textMode, query) {
+        this._panelMeta = results.map((r) => ({
+            lang: r.sel.lang,
+            book: r.data && !r.data.error ? r.data.book : null,
+            chapter: r.data && !r.data.error ? r.data.chapter : null,
+        }));
+        this._textMode = textMode;
         this.output.innerHTML = results.map((r) => this.renderPanel(r, textMode)).join("");
         this.updateTitle(results, textMode, query);
         this.setupSyncScroll();
+        this.updateLocator();
+    }
+
+    /**
+     * Update the sticky presentation-mode locator (book chapter:verse) based
+     * on the topmost visible verse in the first translation panel. Called on
+     * every render and on every scroll. No-op when the locator element is
+     * absent or when the panel has no resolvable book metadata (e.g. text
+     * search, all panels in error state).
+     */
+    updateLocator() {
+        const el = document.getElementById("locator-text");
+        if (!el) return;
+        if (this._textMode || !this._panelMeta) {
+            el.textContent = "";
+            return;
+        }
+        const meta = this._panelMeta.find((m) => m.book) || null;
+        if (!meta) {
+            el.textContent = "";
+            return;
+        }
+        const firstBody = this.output.querySelector(".panel-body");
+        let verseStr = "";
+        if (firstBody) {
+            const anchor = this.topMostVerse(firstBody);
+            if (anchor) verseStr = ":" + anchor.n;
+        }
+        el.textContent = `${meta.book} ${meta.chapter}${verseStr}`;
     }
 
     renderPanel({ sel, data, networkError }, textMode) {
@@ -219,6 +280,12 @@ class Parser {
      */
     setupSyncScroll() {
         const bodies = [...this.output.querySelectorAll(".panel-body")];
+        // Locator updates on every scroll regardless of panel count, so the
+        // presentation-mode top bar reflects the current verse even when only
+        // one translation is enabled.
+        bodies.forEach((body) => {
+            body.addEventListener("scroll", () => this.updateLocator());
+        });
         if (bodies.length < 2) return;
 
         bodies.forEach((body) => {

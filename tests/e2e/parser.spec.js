@@ -62,9 +62,11 @@ test.describe('Bible ref reader (mocked API)', () => {
     await expect(page.locator('#result')).toBeEmpty();
   });
 
-  test('reference search goes through /api/search/ for ka/geo', async ({ page }) => {
+  test('reference parses client-side and uses direct lookup', async ({ page }) => {
+    // "Gen 1:10" → Genesis (id 1) chapter 1 verse 10 → /api/ka/geo/1/1/10
+    // No /api/search/ involved — direct lookup is the primary path.
     await mockApi(page, {
-      [`/api/search/ka/geo/${encodeURIComponent('Gen 1:10')}`]: genesis1_10,
+      '/api/ka/geo/1/1/10': genesis1_10,
     });
     await page.goto('/');
     await selectLanguages(page, ['ka']);
@@ -79,8 +81,8 @@ test.describe('Bible ref reader (mocked API)', () => {
 
   test('renders multiple translations in parallel panels', async ({ page }) => {
     await mockApi(page, {
-      [`/api/search/ka/geo/${encodeURIComponent('Gen 1:10')}`]: genesis1_10,
-      [`/api/search/en/kjv/${encodeURIComponent('Gen 1:10')}`]: genesis1_10_en,
+      '/api/ka/geo/1/1/10': genesis1_10,
+      '/api/en/kjv/1/1/10': genesis1_10_en,
     });
     await page.goto('/');
     await selectLanguages(page, ['ka', 'en']);
@@ -101,9 +103,9 @@ test.describe('Bible ref reader (mocked API)', () => {
 
   test('renders ka, en, and ru in parallel from one query', async ({ page }) => {
     await mockApi(page, {
-      [`/api/search/ka/geo/${encodeURIComponent('Gen 1:10')}`]: genesis1_10,
-      [`/api/search/en/kjv/${encodeURIComponent('Gen 1:10')}`]: genesis1_10_en,
-      [`/api/search/ru/rusv/${encodeURIComponent('Gen 1:10')}`]: genesis1_10_ru,
+      '/api/ka/geo/1/1/10': genesis1_10,
+      '/api/en/kjv/1/1/10': genesis1_10_en,
+      '/api/ru/rusv/1/1/10': genesis1_10_ru,
     });
     await page.goto('/');
     await selectLanguages(page, ['ka', 'en', 'ru']);
@@ -125,7 +127,7 @@ test.describe('Bible ref reader (mocked API)', () => {
     );
   });
 
-  test('Russian version swap (rusv → bti) re-fires through /api/search/ru/bti/', async ({
+  test('Russian version swap (rusv → bti) re-fires under /api/ru/bti/', async ({
     page,
   }) => {
     const seen = [];
@@ -143,16 +145,14 @@ test.describe('Bible ref reader (mocked API)', () => {
     await search(page, 'быт 1:10');
     await page.selectOption('.translation[data-lang="ru"] select', 'bti');
 
-    await expect
-      .poll(() => seen.some((p) => p.startsWith('/api/search/ru/bti/')))
-      .toBe(true);
+    await expect.poll(() => seen.some((p) => p.startsWith('/api/ru/bti/'))).toBe(true);
   });
 
   test('renders verses as object, array, and string shapes', async ({ page }) => {
     await mockApi(page, {
-      [`/api/search/ka/geo/${encodeURIComponent('Gen 1:10-12')}`]: genesis1_10_to_12,
-      [`/api/search/ka/geo/${encodeURIComponent('Ps 23:1-2')}`]: psalm23_array,
-      [`/api/search/ka/geo/${encodeURIComponent('Ps 23:1')}`]: psalm23_string,
+      '/api/ka/geo/1/1/10/12': genesis1_10_to_12,
+      '/api/ka/geo/19/23/1/2': psalm23_array,
+      '/api/ka/geo/19/23/1': psalm23_string,
     });
     await page.goto('/');
     await selectLanguages(page, ['ka']);
@@ -172,7 +172,7 @@ test.describe('Bible ref reader (mocked API)', () => {
 
   test('handles a whole-chapter query (no verse number)', async ({ page }) => {
     await mockApi(page, {
-      [`/api/search/ka/geo/${encodeURIComponent('Gen 1')}`]: genesis1_full,
+      '/api/ka/geo/1/1': genesis1_full,
     });
     await page.goto('/');
     await selectLanguages(page, ['ka']);
@@ -364,7 +364,7 @@ test.describe('Bible ref reader (mocked API)', () => {
 
   test('updates document.title in both reference and text-search modes', async ({ page }) => {
     await mockApi(page, {
-      [`/api/search/ka/geo/${encodeURIComponent('Gen 1:10')}`]: genesis1_10,
+      '/api/ka/geo/1/1/10': genesis1_10,
       [`/api/textsearch/ka/geo/${encodeURIComponent('light')}`]: textSearchResults,
     });
     await page.goto('/');
@@ -393,8 +393,6 @@ test.describe('Bible ref reader (mocked API)', () => {
     await search(page, 'Gen 1:10');
     await page.selectOption('.translation[data-lang="ka"] select', 'orthodox');
 
-    await expect.poll(() => seen.some((p) => p.startsWith('/api/search/ka/orthodox/'))).toBe(
-      true,
-    );
+    await expect.poll(() => seen.some((p) => p.startsWith('/api/ka/orthodox/'))).toBe(true);
   });
 });

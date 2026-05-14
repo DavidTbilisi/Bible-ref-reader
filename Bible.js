@@ -59,6 +59,29 @@ class Bible {
         return data;
     }
 
+    /**
+     * Direct lookup with an explicit numeric book ID — the most robust
+     * path because it bypasses the API's per-language synonym tables
+     * (which are sparse and inconsistent across translations).
+     *
+     * URL shape: /api/<lang>/<ver>/<bookId>[/<chapter>[/<vs>[/<ve>]]]
+     */
+    async directLookup({ lang, version, bookId, chapter, verseStart, verseEnd }) {
+        const base = `${this.host}/api/${lang || this.bibleLanguage}/${version || this.bibleVersion}`;
+        let url = `${base}/${bookId}`;
+        if (chapter != null) {
+            url += `/${chapter}`;
+            if (verseStart != null) {
+                url += `/${verseStart}`;
+                if (verseEnd != null) {
+                    url += `/${verseEnd}`;
+                }
+            }
+        }
+        const response = await fetch(url);
+        return response.json();
+    }
+
     async parseReference(query, { lang, version } = {}) {
         const url = `${this.host}/api/search/${lang || this.bibleLanguage}/${version || this.bibleVersion}/${encodeURIComponent(query)}`;
         const response = await fetch(url);

@@ -123,7 +123,7 @@ test.describe('Presentation mode', () => {
 test.describe('Verse rendering', () => {
   test('renders verse numbers as data-v + rubric span', async ({ page }) => {
     await mockApi(page, {
-      [`/api/search/ka/geo/${encodeURIComponent('Gen 1:10')}`]: genesis1_10,
+      '/api/ka/geo/1/1/10': genesis1_10,
     });
     await page.goto('/');
     await selectLanguages(page, ['ka']);
@@ -142,7 +142,7 @@ test.describe('Verse rendering', () => {
     page,
   }) => {
     await mockApi(page, {
-      [`/api/search/en/kjv/${encodeURIComponent('john 3:16-18')}`]: john3_no_numbers,
+      '/api/en/kjv/43/3/16/18': john3_no_numbers,
     });
     await page.goto('/');
     await selectLanguages(page, ['en']);
@@ -169,8 +169,9 @@ test.describe('Parallel scrolling', () => {
       ),
     });
     await mockApi(page, {
-      [`/api/search/ka/geo/${encodeURIComponent('Gen 1')}`]: longBook('დაბ'),
-      [`/api/search/en/kjv/${encodeURIComponent('Gen 1')}`]: longBook('Genesis'),
+      // Genesis = book id 1 in all three canons; whole-chapter (no verse) URL.
+      '/api/ka/geo/1/1': longBook('დაბ'),
+      '/api/en/kjv/1/1': longBook('Genesis'),
     });
     await page.goto('/');
     await selectLanguages(page, ['ka', 'en']);
@@ -218,7 +219,7 @@ test.describe('Parallel scrolling', () => {
 
   test('sync-scroll setup is a no-op with a single panel', async ({ page }) => {
     await mockApi(page, {
-      [`/api/search/ka/geo/${encodeURIComponent('Gen 1:10')}`]: genesis1_10,
+      [`/api/search/ka/geo/${encodeURIComponent('დაბ 1:10')}`]: genesis1_10,
     });
     await page.goto('/');
     await selectLanguages(page, ['ka']);
@@ -244,7 +245,7 @@ test.describe('Parallel scrolling', () => {
     // en panel has no .verse children, so topMostVerse() must return null
     // and the scroll handler must early-return without throwing.
     await mockApi(page, {
-      [`/api/search/ka/geo/${encodeURIComponent('Gen 1')}`]: {
+      [`/api/search/ka/geo/${encodeURIComponent('დაბ 1')}`]: {
         book: 'დაბ',
         chapter: 1,
         verses: { 1: '1. one', 2: '2. two' },
@@ -273,14 +274,14 @@ test.describe('Parallel scrolling', () => {
     // Make en panel have FEWER verses than ka, so when ka scrolls to verse 5,
     // there is no corresponding verse in en — scrollToVerse must early-return.
     await mockApi(page, {
-      [`/api/search/ka/geo/${encodeURIComponent('Gen 1')}`]: {
+      '/api/ka/geo/1/1': {
         book: 'დაბ',
         chapter: 1,
         verses: Object.fromEntries(
           Array.from({ length: 30 }, (_, i) => [i + 1, `${i + 1}. line`]),
         ),
       },
-      [`/api/search/en/kjv/${encodeURIComponent('Gen 1')}`]: {
+      '/api/en/kjv/1/1': {
         book: 'Genesis',
         chapter: 1,
         verses: { 1: '1. only verse' },
@@ -316,7 +317,8 @@ test.describe('HTML in verse bodies', () => {
     page,
   }) => {
     await mockApi(page, {
-      [`/api/search/en/kjv/${encodeURIComponent('john 3:16-18')}`]: john3_kjv_html,
+      // John = book 43, chapter 3, verses 16-18.
+      '/api/en/kjv/43/3/16/18': john3_kjv_html,
     });
     await page.goto('/');
     await selectLanguages(page, ['en']);
@@ -337,8 +339,7 @@ test.describe('HTML in verse bodies', () => {
     page,
   }) => {
     await mockApi(page, {
-      [`/api/search/en/kjv/${encodeURIComponent('Gen 1:1-2')}`]:
-        genesis1_object_no_numbers,
+      '/api/en/kjv/1/1/1/2': genesis1_object_no_numbers,
     });
     await page.goto('/');
     await selectLanguages(page, ['en']);
@@ -448,6 +449,156 @@ test.describe('Debouncing and stale-response guard', () => {
     await page.waitForTimeout(100);
     await expect(page.locator('.translation-result .title')).toContainText('NEW 1');
     await expect(page.locator('.translation-result .title')).not.toContainText('OLD');
+  });
+});
+
+test.describe('Cross-language book name resolution', () => {
+  test('4მეფ resolves across ka, en, and ru (the original bug)', async ({ page }) => {
+    // The user types the Georgian "4მეფ" (4 Kings = 2 Kings in Western canon).
+    // Client resolves it to numeric book id 12 in each canon and direct-looks
+    // it up — the per-language synonym parser on the server is bypassed.
+    // (Georgian kaId === Western id === 12 here; this isn't true for NT books.)
+    await mockApi(page, {
+      '/api/ka/geo/12/1/1': { book: '4მეფ', chapter: 1, verses: { 1: '1. ka content' } },
+      '/api/en/kjv/12/1/1': { book: '2 Kings', chapter: 1, verses: { 1: '1. en content' } },
+      '/api/ru/rusv/12/1/1': { book: '4 Царств', chapter: 1, verses: { 1: '1. ru content' } },
+    });
+    await page.goto('/');
+    // All three default on, but be explicit anyway.
+    await selectLanguages(page, ['ka', 'en', 'ru']);
+
+    await search(page, '4მეფ 1:1');
+
+    await expect(page.locator('.translation-result')).toHaveCount(3);
+    await expect(page.locator('.translation-result[data-lang="ka"] .v-text')).toContainText('ka content');
+    await expect(page.locator('.translation-result[data-lang="en"] .v-text')).toContainText('en content');
+    await expect(page.locator('.translation-result[data-lang="ru"] .v-text')).toContainText('ru content');
+  });
+
+  test('Russian "4 царств" resolves into the same book for English and Georgian', async ({
+    page,
+  }) => {
+    await mockApi(page, {
+      '/api/ka/geo/12/2/1': { book: '4მეფ', chapter: 2, verses: { 1: '1. ka' } },
+      '/api/en/kjv/12/2/1': { book: '2 Kings', chapter: 2, verses: { 1: '1. en' } },
+      '/api/ru/rusv/12/2/1': { book: '4 Царств', chapter: 2, verses: { 1: '1. ru' } },
+    });
+    await page.goto('/');
+    await selectLanguages(page, ['ka', 'en', 'ru']);
+
+    await search(page, '4 царств 2:1');
+
+    await expect(page.locator('.translation-result[data-lang="ka"] .title')).toHaveText(
+      '4მეფ 2',
+    );
+    await expect(page.locator('.translation-result[data-lang="en"] .title')).toHaveText(
+      '2 Kings 2',
+    );
+  });
+
+  test('unknown book token is passed through unchanged for every language', async ({
+    page,
+  }) => {
+    // localizeQuery returns the original string when findBook is null;
+    // every language sees the same "xyz 1:1" path. The mock falls through
+    // to the 404 error fallback for all three.
+    const seen = new Set();
+    await page.route(`https://${API_HOST}/**`, (route) => {
+      seen.add(new URL(route.request().url()).pathname);
+      return route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify(apiError),
+      });
+    });
+    await page.goto('/');
+    await selectLanguages(page, ['ka', 'en', 'ru']);
+
+    await search(page, 'xyz 1:1');
+
+    await expect(page.locator('.translation-result .error')).toHaveCount(3);
+    expect(seen.has(`/api/search/ka/geo/${encodeURIComponent('xyz 1:1')}`)).toBe(true);
+    expect(seen.has(`/api/search/en/kjv/${encodeURIComponent('xyz 1:1')}`)).toBe(true);
+    expect(seen.has(`/api/search/ru/rusv/${encodeURIComponent('xyz 1:1')}`)).toBe(true);
+  });
+
+  test('text-search queries are NOT localized (search the verse text, not a book)', async ({
+    page,
+  }) => {
+    const seen = [];
+    await page.route(`https://${API_HOST}/**`, (route) => {
+      seen.push(new URL(route.request().url()).pathname);
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ matches: [] }),
+      });
+    });
+    await page.goto('/');
+    await selectLanguages(page, ['en']);
+
+    // "Gen" is a book token, but with "/" prefix this is a text search for
+    // the literal word "Gen" — the client must not rewrite it.
+    await search(page, '/Gen');
+
+    await expect
+      .poll(() =>
+        seen.some((p) => p === `/api/textsearch/en/kjv/${encodeURIComponent('Gen')}`),
+      )
+      .toBe(true);
+  });
+});
+
+test.describe('book-registry (direct)', () => {
+  test('parseQuery resolves a book token to its registry entry', async ({ page }) => {
+    await page.goto('/');
+    const result = await page.evaluate(async () => {
+      const { parseQuery, bookIdFor } = await import('/book-registry.js');
+      const gen = parseQuery('Gen 1:10');
+      const dab = parseQuery('დაბ 1:10');
+      const kings4 = parseQuery('4მეფ 2:1');
+      const cor1 = parseQuery('1კორ');
+      return {
+        gen: { id: gen.book.id, chapter: gen.chapter, verseStart: gen.verseStart },
+        dabKaId: bookIdFor(dab.book, 'ka'),
+        // 4 Kings: Georgian and Western canons both put it at id 12.
+        kings4Id: kings4.book.id,
+        kings4kaId: bookIdFor(kings4.book, 'ka'),
+        // NT book where the canons diverge: 1 Corinthians is Western id 46,
+        // Georgian Orthodox kaId 53.
+        cor1Id: cor1.book.id,
+        cor1KaId: bookIdFor(cor1.book, 'ka'),
+        unknown: parseQuery('Xyz 1:1'),
+        empty: parseQuery(''),
+      };
+    });
+
+    expect(result.gen).toEqual({ id: 1, chapter: 1, verseStart: 10 });
+    expect(result.dabKaId).toBe(1);
+    expect(result.kings4Id).toBe(12);
+    expect(result.kings4kaId).toBe(12);
+    expect(result.cor1Id).toBe(46);
+    expect(result.cor1KaId).toBe(53);
+    expect(result.unknown).toBeNull();
+    expect(result.empty).toBeNull();
+  });
+
+  test('splitBookFromRest handles common shapes', async ({ page }) => {
+    await page.goto('/');
+    const result = await page.evaluate(async () => {
+      const { splitBookFromRest } = await import('/book-registry.js');
+      return {
+        plain: splitBookFromRest('Gen 1:10'),
+        leading: splitBookFromRest('1 Cor 5:1'),
+        bare: splitBookFromRest('Genesis'),
+        numbersOnly: splitBookFromRest('1:1'),
+      };
+    });
+
+    expect(result.plain).toEqual({ book: 'Gen', rest: '1:10' });
+    expect(result.leading).toEqual({ book: '1 Cor', rest: '5:1' });
+    expect(result.bare).toEqual({ book: 'Genesis', rest: '' });
+    expect(result.numbersOnly).toBeNull();
   });
 });
 

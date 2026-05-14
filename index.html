@@ -6,39 +6,33 @@
     <title>ბიბლიის მუხლები</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <div class="page">
       <header class="masthead">
-        <div class="masthead-title">
-          <span class="cross">✦</span>
-          <span class="masthead-name">ბიბლიის მუხლები</span>
-        </div>
+        <div class="masthead-title"><span class="cross">✦</span><span class="masthead-name">ბიბლიის მუხლები</span><span class="locator-text" id="locator-text" aria-live="polite"></span></div>
         <div class="toolbar">
-          <button id="theme-toggle" class="icon-btn" type="button" aria-label="Toggle theme">
-            <span class="theme-light" aria-hidden="true">☉</span>
-            <span class="theme-dark" aria-hidden="true">☾</span>
-          </button>
-          <button id="presentation-toggle" class="icon-btn" type="button" aria-label="Presentation mode" title="Presentation mode (Esc to exit)">
-            <span class="mode-enter" aria-hidden="true">⤢</span>
-            <span class="mode-exit" aria-hidden="true">⤡</span>
-          </button>
+          <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle theme"><span class="theme-light" aria-hidden="true">☉</span><span class="theme-dark" aria-hidden="true">☾</span></button>
+          <button class="icon-btn" id="presentation-toggle" type="button" aria-label="Presentation mode" title="Presentation mode (Esc to exit)"><span class="mode-enter" aria-hidden="true">⤢</span><span class="mode-exit" aria-hidden="true">⤡</span></button>
         </div>
       </header>
-
       <fieldset class="translations" id="translations">
         <legend>Translations</legend>
         <div class="translation" data-lang="ka">
-          <label><input type="checkbox" name="enabled" checked> Georgian</label>
+          <label>
+            <input type="checkbox" name="enabled" checked> Georgian
+          </label>
           <select name="version" aria-label="Georgian version">
             <option value="geo" selected>sbs</option>
             <option value="orthodox">orthodox</option>
           </select>
         </div>
         <div class="translation" data-lang="en">
-          <label><input type="checkbox" name="enabled" checked> English</label>
+          <label>
+            <input type="checkbox" name="enabled" checked> English
+          </label>
           <select name="version" aria-label="English version">
             <option value="kjv" selected>KJV</option>
             <option value="asv">ASV</option>
@@ -48,14 +42,15 @@
           </select>
         </div>
         <div class="translation" data-lang="ru">
-          <label><input type="checkbox" name="enabled" checked> Russian</label>
+          <label>
+            <input type="checkbox" name="enabled" checked> Russian
+          </label>
           <select name="version" aria-label="Russian version">
             <option value="rusv" selected>Синод.</option>
             <option value="bti">BTI</option>
           </select>
         </div>
       </fieldset>
-
       <input type="text" placeholder="Gen 1:10-16   ·   prefix with / for full-text search" list="books" id="search" autocomplete="off">
       <datalist id="books">
         <option value="დაბ">დაბ</option>
@@ -125,9 +120,8 @@
         <option value="ებრ">ებრ</option>
         <option value="გამოცხ">გამოცხ</option>
       </datalist>
-
       <div class="result" id="result"></div>
+      <script defer type="module" src="main.js"></script>
     </div>
-    <script defer type="module" src="main.js"></script>
   </body>
 </html>
