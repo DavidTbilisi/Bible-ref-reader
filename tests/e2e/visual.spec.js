@@ -54,19 +54,24 @@ async function mockApi(page, routes) {
   });
 }
 
-async function setupPage(page, { theme, mode, langs }) {
+async function setupPage(page, { theme, langs }) {
   await page.goto('/');
   await page.evaluate(
-    ({ theme, mode, langs }) => {
+    ({ theme, langs }) => {
       document.documentElement.dataset.theme = theme;
-      document.documentElement.dataset.mode = mode;
       document.querySelectorAll('#translations .translation').forEach((row) => {
         const cb = row.querySelector('input[type="checkbox"]');
         cb.checked = langs.includes(row.dataset.lang);
       });
     },
-    { theme, mode, langs },
+    { theme, langs },
   );
+}
+
+async function setMode(page, mode) {
+  await page.evaluate((m) => {
+    document.documentElement.dataset.mode = m;
+  }, mode);
 }
 
 async function search(page, text) {
@@ -105,12 +110,15 @@ test.describe('@visual visual regression', () => {
 
           await mockApi(page, routes);
           await page.setViewportSize({ width: 1280, height: 800 });
-          await setupPage(page, { theme, mode, langs });
+          await setupPage(page, { theme, langs });
 
+          // Search BEFORE switching to presentation, otherwise #search is
+          // display:none and fill() times out.
           await search(page, 'Gen 1:10-12');
-
-          // Wait for verses to render in every enabled panel before snapping.
           await expect(page.locator('.translation-result .verse')).toHaveCount(expectedVerses);
+
+          if (mode === 'presentation') await setMode(page, 'presentation');
+
           // Block until web fonts are resolved; otherwise the first paint may
           // land on the Georgia fallback and diff against a baseline that
           // captured Cormorant/EB Garamond.
